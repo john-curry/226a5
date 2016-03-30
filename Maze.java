@@ -94,17 +94,20 @@ public class Maze {
    
    public String toString() {
       // FOR YOU TO FILL IN.  MUST FOLLOW CORRECT FORMAT.
+      PrintMaze.displayMaze(this);
+      return new String("");
    }
 
    private void back(int x, int y) {
+     System.out.println("X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+     if (x == (rows - 1) && y == (cols - 1)) {
+       count++;
+       return;
+     }
      for (int i = 0; i < 4; i++) {
-       if (m[x][y] & TWO[i] == TWO[i]) {
-         if (x == (nrow - 1) && y == (ncol - 1)) {
-           num_solns++;
-         } else {
-           // go in direction d
-           back(x + DX[i], y + DY[i]);
-         }
+       if (ok(x, y, i)) {
+         // go in direction d
+         back(x + DX[i], y + DY[i]);
        }
      }
    }
@@ -119,16 +122,11 @@ public class Maze {
       int x = 0;
       int y = 0;
 
-      for (int d : TWO) {
-        if (m[x][y] & d) {
-          
-          back();
-        }
-      }
+      back(x, y);
    }
       
    public long numSolutions() {
-      // FOR YOU TO CODE.
+     return count;
    }
    
    public static void main ( String[] args ) {
@@ -136,9 +134,11 @@ public class Maze {
       int col = Integer.parseInt( args[1] );
       Maze maz = new Maze( row, col, 9999 );
       System.out.print( maz );
+      maz.solveMaze();
       System.out.println( "Solutions = "+maz.numSolutions() );
       maz.knockDown( (row+col)/4 );
       System.out.print( maz );
+      maz.solveMaze();
       System.out.println( "Solutions = "+maz.numSolutions() );
       maz = new Maze( row, col, 9999 );  // creates the same maze anew.
       maz.solveMaze();

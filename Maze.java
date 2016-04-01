@@ -93,18 +93,23 @@ public class Maze {
    }
    
    public String toString() {
-      // FOR YOU TO FILL IN.  MUST FOLLOW CORRECT FORMAT.
+      for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+          System.out.print(m[i][j] + " ");
+        }
+        System.out.println();
+      }
+      return new String();
    }
 
    private void back(int x, int y) {
+     if ((x == rows - 1) && (y == cols - 1)) {
+       count++;
+     }
      for (int i = 0; i < 4; i++) {
-       if (m[x][y] & TWO[i] == TWO[i]) {
-         if (x == (nrow - 1) && y == (ncol - 1)) {
-           num_solns++;
-         } else {
-           // go in direction d
-           back(x + DX[i], y + DY[i]);
-         }
+       if (ok(x, y, i) || m[x + DX[i]][y + DY[i]] == 16) {
+         // go in direction d
+         back(x + DX[i], y + DY[i]);
        }
      }
    }
@@ -118,17 +123,12 @@ public class Maze {
       */
       int x = 0;
       int y = 0;
-
-      for (int d : TWO) {
-        if (m[x][y] & d) {
-          
-          back();
-        }
-      }
+      back(x, y);
    }
       
    public long numSolutions() {
       // FOR YOU TO CODE.
+      return 42;
    }
    
    public static void main ( String[] args ) {

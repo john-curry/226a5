@@ -20,6 +20,7 @@ import java.util.Random;
 public class Maze {
    
    private int[][] m;   // maze representation
+   private boolean[][] marked; // have we visited this cell yet
    private int rows;    // number of rows in the maze
    private int cols;    // number of columns in the maze
    private final static byte[] TWO = { 1, 2, 4, 8, 16};
@@ -99,20 +100,91 @@ public class Maze {
         }
         System.out.println();
       }
+
+      // FOR YOU TO FILL IN.  MUST FOLLOW CORRECT FORMAT.
+      PrintMaze.displayMaze(this);
       return new String();
    }
 
-   private void back(int x, int y) {
-     if ((x == rows - 1) && (y == cols - 1)) {
-       count++;
-     }
-     for (int i = 0; i < 4; i++) {
-       if (ok(x, y, i) || m[x + DX[i]][y + DY[i]] == 16) {
-         // go in direction d
-         back(x + DX[i], y + DY[i]);
-       }
-     }
+   private boolean topLeftCorner(int x, int y) {
+     return x == 0 && y == 0;
    }
+
+   private boolean outsideTopWall(int x, int y) {
+     return y == 0;
+   }
+
+   private boolean outsideBottomWall(int x, int y) {
+     return y == rows - 1;
+   }
+
+   private boolean outsideLeftWall(int x, int y) {
+     return x == 0;
+   }
+   
+   private boolean outsideRightWall(int x, int y) {
+     return x == cols - 1;
+   }
+
+   private boolean bottomRightCorner(int x, int y) {
+     return outsideRightWall(x, y) && outsideBottomWall(x, y);
+   }
+
+   private boolean outsideWall(int x, int y) {
+     return outsideTopWall(x, y) || outsideBottomWall(x, y) || outsideRightWall(x, y) || outsideLeftWall(x, y);
+   }
+
+   private void back(int x, int y) {
+     marked[x][y] = true;
+     System.out.println("Visiting X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+
+     if (bottomRightCorner(x, y)) {
+       count++;
+       marked[x][y] = false;
+       return;
+     }
+
+     if (noWallRight(x, y) && !marked[x + 1][y]) {
+       back(x + 1, y);
+     }
+
+     if (noWallDown(x, y) && !marked[x][y + 1]) {
+       back(x, y + 1);
+     }
+
+     if (noWallUp(x, y) && y > 0) {
+       if (!marked[x][y - 1]) back(x, y - 1);
+     }
+
+     if (noWallLeft(x, y) && x > 0) {
+       if (!marked[x - 1][y]) back(x - 1, y);
+     }
+      
+     marked[x][y] = false;
+     System.out.println("Leaving X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+   }
+
+   private boolean visited(int x, int y) {
+     return outsideWall(x, y) ? m[x][y] > 16 : m[x][y] > 15;
+   }
+
+   private boolean noWallUp(int x, int y) {
+     return ((m[x][y] & 8) == 0) && !outsideTopWall(x, y);
+   }
+
+   private boolean noWallLeft(int x, int y) {
+     return ((m[x][y] & 1) == 0) && !outsideLeftWall(x, y);
+   }
+
+   private boolean noWallRight(int x, int y) {
+     return ((m[x][y] & 4) == 0) && !outsideRightWall(x, y);
+   }
+
+   private boolean noWallDown(int x, int y) {
+     return ((m[x][y] & 2) == 0) && !outsideBottomWall(x, y);
+   }
+
+
    public void solveMaze() {
       // FOR YOU TO CODE.
       /* start at 0,0
@@ -123,26 +195,28 @@ public class Maze {
       */
       int x = 0;
       int y = 0;
+      marked = new boolean[m.length][m[0].length];
       back(x, y);
    }
       
    public long numSolutions() {
-      // FOR YOU TO CODE.
-      return 42;
+     return count;
    }
    
    public static void main ( String[] args ) {
       int row = Integer.parseInt( args[0] );
       int col = Integer.parseInt( args[1] );
       Maze maz = new Maze( row, col, 9999 );
-      System.out.print( maz );
-      System.out.println( "Solutions = "+maz.numSolutions() );
+      //System.out.print( maz );
+      //maz.solveMaze();
+      //System.out.println( "Solutions = "+maz.numSolutions() );
       maz.knockDown( (row+col)/4 );
       System.out.print( maz );
-      System.out.println( "Solutions = "+maz.numSolutions() );
-      maz = new Maze( row, col, 9999 );  // creates the same maze anew.
       maz.solveMaze();
-      System.out.print( maz );
+      System.out.println( "Solutions = "+maz.numSolutions() );
+      //maz = new Maze( row, col, 9999 );  // creates the same maze anew.
+      //maz.solveMaze();
+      //System.out.print( maz );
    }
 }
 

@@ -34,16 +34,25 @@ public class Maze {
    public int getCols() { return( cols ); }
 
    public Maze ( int nr, int nc, int seed ) {
+
       r = new Random( seed );
       rows = nr;  cols = nc;
       m = new int[nr+2][nc+2];
-      for (int r=1; r<=nr; ++r )
-         for (int c=1; c<=nc; ++c )
+
+      for (int r=1; r<=nr; ++r ) {
+         for (int c=1; c<=nc; ++c ) {
             m[r][c] = 15;
-      for (int r=0; r<nr+2; ++r )
+         }
+      }
+
+      for (int r=0; r<nr+2; ++r ) {
             m[r][0] = m[r][nc+1] = 16;
-      for (int c=0; c<nc+2; ++c )
+      }
+
+      for (int c=0; c<nc+2; ++c ) {
          m[0][c] = m[nr+1][c] = 16;
+      }
+
       Create( nr/2+1, nc/2+1, 0 );
    }
 
@@ -94,112 +103,63 @@ public class Maze {
    }
    
    public String toString() {
-      for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
+      for (int i = 0; i < m.length; i++) {
+        for (int j = 0; j < m[0].length; j++) {
           System.out.print(m[i][j] + " ");
         }
         System.out.println();
       }
 
-      // FOR YOU TO FILL IN.  MUST FOLLOW CORRECT FORMAT.
       PrintMaze.displayMaze(this);
       return new String();
    }
 
-   private boolean topLeftCorner(int x, int y) {
-     return x == 0 && y == 0;
-   }
-
-   private boolean outsideTopWall(int x, int y) {
-     return y == 0;
-   }
-
-   private boolean outsideBottomWall(int x, int y) {
-     return y == rows - 1;
-   }
-
-   private boolean outsideLeftWall(int x, int y) {
-     return x == 0;
-   }
-   
-   private boolean outsideRightWall(int x, int y) {
-     return x == cols - 1;
-   }
-
-   private boolean bottomRightCorner(int x, int y) {
-     return outsideRightWall(x, y) && outsideBottomWall(x, y);
-   }
-
-   private boolean outsideWall(int x, int y) {
-     return outsideTopWall(x, y) || outsideBottomWall(x, y) || outsideRightWall(x, y) || outsideLeftWall(x, y);
-   }
-
    private void back(int x, int y) {
-     marked[x][y] = true;
-     System.out.println("Visiting X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+     if (x > rows || y > cols || x < 1 || y < 1) return;
 
-     if (bottomRightCorner(x, y)) {
+     m[x][y] += 16;
+
+     PrintMaze.displayMaze(this);
+
+     if (x == rows && y == cols) {
        count++;
-       marked[x][y] = false;
+       m[x][y] -= 16;
        return;
      }
 
-     if (noWallRight(x, y) && !marked[x + 1][y]) {
-       back(x + 1, y);
+     for (int i = 0; i < 4; i++) {
+       if (((m[x][y] & TWO[i]) == 0) && m[x + DX[i]][y + DY[i]] < 16) {
+         back(x + DX[i], y + DY[i]);
+       }
      }
 
-     if (noWallDown(x, y) && !marked[x][y + 1]) {
-       back(x, y + 1);
-     }
-
-     if (noWallUp(x, y) && y > 0) {
-       if (!marked[x][y - 1]) back(x, y - 1);
-     }
-
-     if (noWallLeft(x, y) && x > 0) {
-       if (!marked[x - 1][y]) back(x - 1, y);
-     }
-      
-     marked[x][y] = false;
-     System.out.println("Leaving X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+     m[x][y] -= 16;
    }
-
-   private boolean visited(int x, int y) {
-     return outsideWall(x, y) ? m[x][y] > 16 : m[x][y] > 15;
-   }
-
-   private boolean noWallUp(int x, int y) {
-     return ((m[x][y] & 8) == 0) && !outsideTopWall(x, y);
-   }
-
-   private boolean noWallLeft(int x, int y) {
-     return ((m[x][y] & 1) == 0) && !outsideLeftWall(x, y);
-   }
-
-   private boolean noWallRight(int x, int y) {
-     return ((m[x][y] & 4) == 0) && !outsideRightWall(x, y);
-   }
-
-   private boolean noWallDown(int x, int y) {
-     return ((m[x][y] & 2) == 0) && !outsideBottomWall(x, y);
-   }
-
 
    public void solveMaze() {
-      // FOR YOU TO CODE.
-      /* start at 0,0
-      for each direction
-        if path in that direction
-          if soln num soln ++
-          else back()
-      */
-      int x = 0;
-      int y = 0;
-      marked = new boolean[m.length][m[0].length];
-      back(x, y);
+     int x = 1;
+     int y = 1;
+
+     do {
+       m[x][y] += 16;
+       if (x == rows && y == cols) {
+         toString();
+         return;
+       }
+       for (int i = 0; i < 4; i++) {
+         if (((m[x][y] & TWO[i]) == 0) && m[x + DX[i]][y + DY[i]] < 16) {
+           x += DX[i];
+           y += DY[i];
+         }
+       }
+     } while (x != rows && y != cols);
+           
    }
       
    public long numSolutions() {
+     int x = 1;
+     int y = 1;
+     back(x, y);
      return count;
    }
    

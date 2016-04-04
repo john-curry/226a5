@@ -3,7 +3,7 @@ FLAGS=-g
 SRC=$(wildcard *.java)
 TARGETS=$(SRC:.java=.class)
 OUT=Maze
-ARGS=3 3
+ARGS=4 4
 CLASSPATH=.
 
 all: $(TARGETS)

@@ -1,0 +1,60 @@
+   //private void back(int x, int y) {
+
+   //  //if (!onBoard(x, y)) return;
+
+   //  assert(!isMarked(x, y)) : "re-visiting node x: " + " y: " + y;
+
+   //  mark(x, y);
+
+   //  System.out.println("Visiting X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+
+   //  if (x == cols && y == rows) {
+   //    count++;
+   //    unmark(x, y);
+   //    System.out.println("Leaving  X: " + x + " Y: " + y + " m[x][y]: " + m[x][y] + " SOLUTION.");
+   //    return;
+   //  }
+
+   //  if (noWallRight(x, y) && onBoard(x + 1, y)) {
+   //    if (!isMarked(x + 1, y)) {
+   //      back(x + 1, y);
+   //    }
+   //  }
+
+   //  if (noWallDown(x, y) && onBoard(x, y + 1)) {
+   //    if (!isMarked(x ,y + 1)) {
+   //      back(x, y + 1);
+   //    }
+   //  }
+
+   //  if (noWallUp(x, y) && onBoard(x, y - 1)) {
+   //    if (!isMarked(x, y - 1)) {
+   //      back(x, y - 1);
+   //    }
+   //  }
+
+   //  if (noWallLeft(x, y) && onBoard(x - 1, y)) {
+   //    if (!isMarked(x - 1, y)) {
+   //      back(x - 1, y);
+   //    }
+   //  }
+   //   
+   //  unmark(x, y);
+   //  System.out.println("Leaving  X: " + x + " Y: " + y + " m[x][y]: " + m[x][y]);
+   //}
+
+   private boolean noWallUp(int x, int y) {
+     return ((m[x][y] & 8) == 0);
+   }
+
+   private boolean noWallLeft(int x, int y) {
+     return ((m[x][y] & 1) == 0);
+   }
+
+   private boolean noWallRight(int x, int y) {
+     return ((m[x][y] & 4) == 0);
+   }
+
+   private boolean noWallDown(int x, int y) {
+     return ((m[x][y] & 2) == 0);
+   }

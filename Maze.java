@@ -1,5 +1,4 @@
-/*============================================================*/
-//      8
+
 //    1 * 4    <-- encodings of various directions around a cell
 //      2
 //
@@ -16,6 +15,7 @@
 //
 /*============================================================*/
 import java.util.Random;
+import java.util.*;
 
 public class Maze {
    
@@ -103,23 +103,21 @@ public class Maze {
    }
    
    public String toString() {
-      for (int i = 0; i < m.length; i++) {
-        for (int j = 0; j < m[0].length; j++) {
-          System.out.print(m[i][j] + " ");
-        }
-        System.out.println();
-      }
-
-      PrintMaze.displayMaze(this);
-      return new String();
+     StringBuilder sb = new StringBuilder();
+     for (int i = 1; i <= rows; i++) {
+       for (int j = 1; j <= cols; j++) {
+         String out = m[i][j] > 9 ? (m[i][j] + " ") : (m[i][j] + "  ");
+         sb.append(out);
+       }
+       sb.append(System.getProperty("line.separator"));
+     }
+     return sb.toString();
    }
 
    private void back(int x, int y) {
      if (x > rows || y > cols || x < 1 || y < 1) return;
 
      m[x][y] += 16;
-
-     PrintMaze.displayMaze(this);
 
      if (x == rows && y == cols) {
        count++;
@@ -140,21 +138,33 @@ public class Maze {
      int x = 1;
      int y = 1;
 
-     do {
-       m[x][y] += 16;
-       if (x == rows && y == cols) {
-         toString();
-         return;
-       }
-       for (int i = 0; i < 4; i++) {
-         if (((m[x][y] & TWO[i]) == 0) && m[x + DX[i]][y + DY[i]] < 16) {
-           x += DX[i];
-           y += DY[i];
-         }
-       }
-     } while (x != rows && y != cols);
+      solve(x, y);
            
    }
+
+   public boolean solve(int x, int y) {
+     m[x][y] += 16;
+
+     if (x == rows && y == cols) {
+       toString();
+       m[x][y] -= 16;
+       return true;
+     }
+
+     for (int i = 0; i < 4; i++) {
+       if (((m[x][y] & TWO[i]) == 0) && m[x + DX[i]][y + DY[i]] < 16) {
+         boolean done = solve(x + DX[i], y + DY[i]);
+         if (done)  {
+           m[x][y] -= 16;
+           return true;
+         }
+       }
+     }
+     m[x][y] -= 16;
+     return false;
+   }
+
+
       
    public long numSolutions() {
      int x = 1;
@@ -166,17 +176,17 @@ public class Maze {
    public static void main ( String[] args ) {
       int row = Integer.parseInt( args[0] );
       int col = Integer.parseInt( args[1] );
-      Maze maz = new Maze( row, col, 9999 );
-      //System.out.print( maz );
-      //maz.solveMaze();
-      //System.out.println( "Solutions = "+maz.numSolutions() );
-      maz.knockDown( (row+col)/4 );
+      Maze maz = new Maze( row, col, 9998 );
       System.out.print( maz );
       maz.solveMaze();
       System.out.println( "Solutions = "+maz.numSolutions() );
-      //maz = new Maze( row, col, 9999 );  // creates the same maze anew.
-      //maz.solveMaze();
-      //System.out.print( maz );
+      maz.knockDown( (row+col)/4 );
+      maz.solveMaze();
+      System.out.print( maz );
+      System.out.println( "Solutions = "+maz.numSolutions() );
+      maz = new Maze( row, col, 9999 );  // creates the same maze anew.
+      maz.solveMaze();
+      System.out.print( maz );
    }
 }
 
